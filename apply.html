@@ -129,7 +129,14 @@
   $('contact').textContent = '문의 ' + [c.team, c.phone, c.email, c.place].filter(Boolean).join(' · ');
   $('title').textContent = DATA.year + ' 글로벌 현장학습 참가 신청서';
 
-  if (!cur || !DATA.apiUrl) {
+  // ?preview 를 붙이면 접수 기간이 아니어도 양식을 볼 수 있다 (제출은 막힘)
+  const preview = new URLSearchParams(location.search).has('preview');
+  if (preview) {
+    $('f').hidden = false;
+    $('submit').disabled = true;
+    $('closed').hidden = false;
+    $('closed').textContent = '미리보기 화면입니다. 제출은 되지 않습니다.';
+  } else if (!cur || !DATA.apiUrl) {
     $('closed').hidden = false;
     $('closed').textContent = !cur ? '지금은 접수 기간이 아닙니다.' : '온라인 접수를 준비하고 있습니다.';
   } else $('f').hidden = false;
