@@ -57,6 +57,12 @@
   ul.dots { margin: 0; padding-left: 18px; }
   .tbd { color: #9aa1aa; }
 
+  .crit { width: 100%; border-collapse: collapse; background: var(--card); font-size: 15px; }
+  .crit td { border-bottom: 1px solid var(--line); padding: 10px 12px; vertical-align: top; }
+  .crit td:first-child { font-weight: 600; white-space: nowrap; }
+  .crit td:last-child { text-align: right; white-space: nowrap; color: var(--navy); font-weight: 700; }
+  .crit td:nth-child(2) { color: var(--sub); }
+
   .faq details { border-bottom: 1px solid var(--line); padding: 12px 0; }
   .faq summary { cursor: pointer; font-weight: 600; }
   .faq p { margin: 8px 0 0; color: var(--sub); }
@@ -90,6 +96,11 @@
   <section class="two">
     <div><h2>지원 자격</h2><ul class="dots" id="eligibility"></ul></div>
     <div><h2>제출 서류</h2><ul class="dots" id="documents"></ul></div>
+  </section>
+
+  <section>
+    <h2>선발 기준</h2>
+    <table class="crit" id="criteria"></table>
   </section>
 
   <section>
@@ -155,6 +166,7 @@
   const list = a => a.filter(Boolean).map(x => `<li>${esc(x)}</li>`).join('') + `<li>${TBD}</li>`.repeat(a.some(x => !x) ? 1 : 0);
   $('eligibility').innerHTML = list(DATA.eligibility);
   $('documents').innerHTML = list(DATA.documents);
+  $('criteria').innerHTML = DATA.criteria.map(r => `<tr>${r.map(x => `<td>${esc(x)}</td>`).join('')}</tr>`).join('');
   $('cost').innerHTML = v(DATA.cost);
 
   $('faq').innerHTML = DATA.faq.filter(([, a]) => a).map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('');
