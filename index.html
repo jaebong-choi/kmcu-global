@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>글로벌 현장학습 모집 · 계명문화대학교 국제처</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root {
+    --ink: #1b2330; --sub: #5b6573; --line: #e3e6ea; --bg: #f6f5f1; --card: #fff;
+    --navy: #183a63; --accent: #c8502a; --ok: #1f7a4d;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.65 Pretendard, 'Malgun Gothic', sans-serif; word-break: keep-all; }
+  a { color: inherit; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 16px; }
+
+  header { background: var(--navy); color: #fff; padding: 14px 0; font-size: 14px; }
+  header .wrap { display: flex; justify-content: space-between; gap: 12px; }
+  header b { font-weight: 600; }
+
+  .notice { background: var(--card); border: 1px solid var(--line); border-top: 4px solid var(--navy); margin: 28px auto 0; padding: 28px 24px; }
+  .tag { display: inline-block; font-size: 13px; font-weight: 600; padding: 2px 10px; border-radius: 3px; background: #eef1f5; color: var(--sub); }
+  .tag.open { background: #e5f3ec; color: var(--ok); }
+  .tag.soon { background: #fbeee8; color: var(--accent); }
+  h1 { font-size: clamp(24px, 5vw, 32px); line-height: 1.3; margin: 12px 0 10px; letter-spacing: -0.02em; }
+  .lead { color: var(--sub); margin: 0 0 22px; }
+  .rounds { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-bottom: 22px; }
+  .round { border: 1px solid var(--line); padding: 12px 14px; }
+  .round small { color: var(--sub); display: block; font-size: 13px; }
+  .round.now { border-color: var(--ok); }
+  .apply { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .btn { display: inline-block; background: var(--accent); color: #fff; text-decoration: none; font-weight: 700; padding: 13px 28px; border-radius: 4px; }
+  .btn[aria-disabled="true"] { background: #b9bec5; pointer-events: none; }
+  .dday { font-weight: 700; color: var(--accent); }
+
+  section { margin: 40px 0; }
+  h2 { font-size: 19px; margin: 0 0 14px; padding-bottom: 8px; border-bottom: 2px solid var(--ink); }
+
+  .prog { background: var(--card); border: 1px solid var(--line); margin-bottom: 8px; }
+  .prog summary { cursor: pointer; padding: 16px 18px; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; list-style: none; }
+  .prog summary::-webkit-details-marker { display: none; }
+  .prog summary::after { content: '+'; margin-left: auto; color: var(--sub); font-size: 20px; line-height: 1; }
+  .prog[open] summary::after { content: '−'; }
+  .prog .c { font-weight: 700; font-size: 17px; }
+  .prog .o { color: var(--sub); font-size: 14px; }
+  .prog dl { margin: 0; padding: 4px 18px 16px; display: grid; grid-template-columns: 88px 1fr; gap: 6px 12px; font-size: 15px; }
+  .prog dt { color: var(--sub); }
+  .prog dd { margin: 0; }
+
+  ol.flow { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; counter-reset: s; }
+  ol.flow li { background: var(--card); border: 1px solid var(--line); padding: 12px 14px; counter-increment: s; font-size: 15px; }
+  ol.flow li::before { content: counter(s, decimal-leading-zero); display: block; font-size: 12px; color: var(--accent); font-weight: 700; }
+  ol.flow small { color: var(--sub); display: block; }
+
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  ul.dots { margin: 0; padding-left: 18px; }
+  .tbd { color: #9aa1aa; }
+
+  .faq details { border-bottom: 1px solid var(--line); padding: 12px 0; }
+  .faq summary { cursor: pointer; font-weight: 600; }
+  .faq p { margin: 8px 0 0; color: var(--sub); }
+
+  footer { border-top: 1px solid var(--line); padding: 24px 0 40px; font-size: 14px; color: var(--sub); }
+  @media (max-width: 600px) { .two { grid-template-columns: 1fr; } .notice { padding: 22px 18px; } }
+</style>
+</head>
+<body>
+<header><div class="wrap"><b>계명문화대학교 국제처</b><span>글로벌 현장학습</span></div></header>
+
+<main class="wrap">
+  <div class="notice">
+    <span class="tag" id="status"></span>
+    <h1 id="title"></h1>
+    <p class="lead" id="lead"></p>
+    <div class="rounds" id="rounds"></div>
+    <div class="apply"><a class="btn" id="applyBtn" target="_blank" rel="noopener"></a><span id="dday"></span></div>
+  </div>
+
+  <section>
+    <h2>파견 프로그램</h2>
+    <div id="programs"></div>
+  </section>
+
+  <section>
+    <h2>진행 일정</h2>
+    <ol class="flow" id="schedule"></ol>
+  </section>
+
+  <section class="two">
+    <div><h2>지원 자격</h2><ul class="dots" id="eligibility"></ul></div>
+    <div><h2>제출 서류</h2><ul class="dots" id="documents"></ul></div>
+  </section>
+
+  <section>
+    <h2>비용</h2>
+    <p id="cost"></p>
+  </section>
+
+  <section class="faq">
+    <h2>자주 묻는 질문</h2>
+    <div id="faq"></div>
+  </section>
+</main>
+
+<footer><div class="wrap" id="contact"></div></footer>
+
+<script src="data.js"></script>
+<script>
+  const TBD = '<span class="tbd">추후 안내</span>';
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const v = s => s ? esc(s) : TBD;
+  const $ = id => document.getElementById(id);
+  const fmt = d => d ? d.replace(/^(\d{4})-0?(\d+)-0?(\d+)$/, '$1. $2. $3.') : '';
+
+  // ?today=2027-01-15 로 날짜를 바꿔 상태 표시를 미리 볼 수 있다
+  const today = new URLSearchParams(location.search).get('today') || new Date().toLocaleDateString('sv');
+  const cur = DATA.rounds.find(r => r.open && r.open <= today && today <= r.close);
+  const next = DATA.rounds.find(r => r.open && today < r.open);
+
+  document.title = DATA.title + ' · 계명문화대학교 국제처';
+  $('title').textContent = DATA.title;
+  $('lead').textContent = DATA.lead;
+
+  const st = $('status');
+  if (cur) { st.textContent = cur.name + ' 접수 중'; st.className = 'tag open'; }
+  else if (next) { st.textContent = '모집 예정'; st.className = 'tag soon'; }
+  else st.textContent = '모집 마감';
+
+  $('rounds').innerHTML = DATA.rounds.map(r =>
+    `<div class="round${r === cur ? ' now' : ''}"><small>${esc(r.name)}</small>${r.open ? fmt(r.open) + ' ~ ' + fmt(r.close) : TBD}</div>`).join('');
+
+  const btn = $('applyBtn');
+  if (cur && DATA.applyUrl) { btn.textContent = '온라인 지원하기'; btn.href = DATA.applyUrl; }
+  else { btn.textContent = cur ? '접수 준비 중' : next ? '접수 기간이 아닙니다' : '모집이 마감되었습니다'; btn.setAttribute('aria-disabled', 'true'); btn.removeAttribute('href'); }
+
+  const days = (a, b) => Math.round((new Date(b) - new Date(a)) / 864e5);
+  if (cur) $('dday').innerHTML = `<span class="dday">마감 D-${days(today, cur.close)}</span>`;
+  else if (next) $('dday').textContent = `${next.name} 시작까지 ${days(today, next.open)}일`;
+
+  $('programs').innerHTML = DATA.programs.map(p => `
+    <details class="prog">
+      <summary><span class="c">${esc(p.country)}</span><span class="o">${esc(p.org)}</span></summary>
+      <dl>
+        <dt>대상 학과</dt><dd>${v(p.majors)}</dd>
+        <dt>모집 인원</dt><dd>${p.seats ? esc(p.seats) + '명' : TBD}</dd>
+        <dt>파견 기간</dt><dd>${v(p.period)}</dd>
+        <dt>과정</dt><dd>${v(p.course)}</dd>
+        ${p.note ? `<dt>참고</dt><dd>${esc(p.note)}</dd>` : ''}
+      </dl>
+    </details>`).join('');
+
+  $('schedule').innerHTML = DATA.schedule.map(([n, d]) => `<li>${esc(n)}<small>${d ? esc(d) : '추후 안내'}</small></li>`).join('');
+
+  const list = a => a.filter(Boolean).map(x => `<li>${esc(x)}</li>`).join('') + `<li>${TBD}</li>`.repeat(a.some(x => !x) ? 1 : 0);
+  $('eligibility').innerHTML = list(DATA.eligibility);
+  $('documents').innerHTML = list(DATA.documents);
+  $('cost').innerHTML = v(DATA.cost);
+
+  $('faq').innerHTML = DATA.faq.filter(([, a]) => a).map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('');
+
+  const c = DATA.contact;
+  $('contact').innerHTML = `문의 ${esc(c.team)}` + [c.phone, c.email, c.place].filter(Boolean).map(x => ' · ' + esc(x)).join('');
+</script>
+</body>
+</html>
