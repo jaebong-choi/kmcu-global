@@ -215,6 +215,9 @@ function exportList() {
       AI.push([grant ? grant * D.budget.matching / 100 : '']);
       AK.push([grant ? grant * D.budget.self / 100 : '']);
     });
+    // 서식의 입력 제한(응시일 범위, 글자 수 등)이 값을 막지 않고 경고만 하게 바꾼다. 드롭다운은 그대로 남는다.
+    const area = sh.getRange(FIRST, 2, n, 38);
+    area.setDataValidations(area.getDataValidations().map(r => r.map(v => v ? v.copy().setAllowInvalid(true).build() : null)));
     [21, 24, 30, 31].forEach(c => sh.getRange(FIRST, c, n).setNumberFormat('@'));  // 학번·휴대폰·점수·응시일
     sh.getRange(FIRST, 2, n, 1).setValues(B);
     sh.getRange(FIRST, 5, n, 29).setValues(E);   // E~AG
