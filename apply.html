@@ -9,7 +9,7 @@
   document.documentElement.dataset.theme = t || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
 </script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
 <header class="site-header">
@@ -18,7 +18,8 @@
     <a class="site-name" href="index.html">글로벌 현장학습</a>
     <nav class="util">
       <a class="pill hide-sm" href="index.html">모집 안내</a>
-      <a class="pill" href="check.html">지원서 확인</a>
+      <a class="pill hide-sm" href="check.html">지원서 확인</a>
+      <button class="pill" type="button" data-act="lang">ENG</button>
       <button class="pill" type="button" data-act="theme">다크 모드</button>
     </nav>
   </div>
@@ -27,7 +28,7 @@
 <main class="inner narrow">
   <div class="page-head">
     <h1 id="title"></h1>
-    <p>1차 접수용 신청서입니다. 성적증명서, 어학성적표, 취약계층 증빙서류는 신청서에 파일로 올릴 수 있습니다. 지금 없으면 비워 두고 안내에 따라 나중에 제출하세요.</p>
+    <p data-en="This is the first-round application. You can upload your transcript, language score report and proof of vulnerable status here. If you do not have them yet, leave them blank and submit them later as instructed.">1차 접수용 신청서입니다. 성적증명서, 어학성적표, 취약계층 증빙서류는 신청서에 파일로 올릴 수 있습니다. 지금 없으면 비워 두고 안내에 따라 나중에 제출하세요.</p>
     <div class="ask" id="ask"></div>
   </div>
 
@@ -36,7 +37,10 @@
   <form class="form" id="f" hidden>
     <fieldset>
       <legend>개인정보 수집·이용 동의</legend>
-      <div class="terms">수집 항목: 성명, 성별, 학번, 학과, 계열, 학년, 지도교수, 이수학점, 평점, 연락처, 비상연락처, 이메일, 주소, 어학성적, 현장학습 계획서, 첨부 서류(성적증명서, 어학성적표, 취약계층 증빙)
+      <div class="terms" data-en="Items collected: name, gender, student ID, department, field of study, year, academic advisor, credits earned, GPA, phone, emergency contact, email, address, language scores, training plan, attachments (transcript, language score report, proof of vulnerable status)
+Purpose: selecting participants and running the Global Field Training program (including submission to the Korean Council for University College Education)
+Retention: until the program's final report is completed
+You cannot apply without agreeing.">수집 항목: 성명, 성별, 학번, 학과, 계열, 학년, 지도교수, 이수학점, 평점, 연락처, 비상연락처, 이메일, 주소, 어학성적, 현장학습 계획서, 첨부 서류(성적증명서, 어학성적표, 취약계층 증빙)
 목적: 글로벌 현장학습 참가자 선발 및 사업 운영 (한국전문대학교육협의회 제출 포함)
 보유 기간: 사업 결과보고 완료 시까지
 동의하지 않으면 지원할 수 없습니다.</div>
@@ -116,7 +120,11 @@
 
     <fieldset>
       <legend>선발 시 의무사항</legend>
-      <div class="terms">· 월드잡플러스 가입과 이러닝 이수, 파견 전 사전교육 참여
+      <div class="terms" data-en="· Sign up for WorldJob+, complete its e-learning, and attend pre-departure training
+· After the program, submit an official language test score and take part in the core competency assessment (before and after) and satisfaction survey
+· Provide internship and employment information for 3 years after graduation
+· Dropping out or poor participation may lead to cancellation and repayment of government funding
+If finally selected, you will submit a signed student pledge and guardian consent form.">· 월드잡플러스 가입과 이러닝 이수, 파견 전 사전교육 참여
 · 프로그램 종료 후 공인어학시험 성적표 제출, 핵심역량진단평가(사전·사후)와 만족도조사 참여
 · 졸업 후 3년간 인턴·취업 관련 신상정보 제공
 · 중도 포기나 불성실 참여 시 선발 취소, 국고보조금 환수 등 불이익
@@ -149,13 +157,16 @@
 
 <footer class="site-footer"><div class="inner" id="contact"></div></footer>
 
-<script src="data.js?v=4"></script>
-<script src="common.js?v=4"></script>
+<script src="data.js?v=8"></script>
+<script src="i18n.js?v=8"></script>
+<script src="common.js?v=8"></script>
 <script>
   const $ = id => document.getElementById(id);
   const today = new URLSearchParams(location.search).get('today') || new Date().toLocaleDateString('sv');
   const cur = DATA.rounds.find(r => r.open && r.open <= today && today <= r.close);
-  $('title').textContent = DATA.year + ' 글로벌 현장학습 참가 신청서';
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  $('title').textContent = tx(DATA.year + ' 글로벌 현장학습 참가 신청서', DATA.year + ' Global Field Training Application');
+  document.title = tx('참가 신청서 | 계명문화대학교 국제처', 'Application | KMCU International');
 
   // ?preview 를 붙이면 접수 기간이 아니어도 양식을 볼 수 있다 (제출은 막힘)
   const preview = new URLSearchParams(location.search).has('preview');
@@ -163,19 +174,22 @@
     $('f').hidden = false;
     $('submit').disabled = true;
     $('closed').hidden = false;
-    $('closed').textContent = '미리보기 화면입니다. 제출은 되지 않습니다.';
+    $('closed').textContent = tx('미리보기 화면입니다. 제출은 되지 않습니다.', 'This is a preview. The form cannot be submitted.');
   } else if (!cur || !DATA.apiUrl) {
     $('closed').hidden = false;
-    $('closed').textContent = !cur ? '지금은 접수 기간이 아닙니다.' : '온라인 접수를 준비하고 있습니다.';
+    $('closed').textContent = !cur ? tx('지금은 접수 기간이 아닙니다.', 'Applications are not open right now.') : tx('온라인 접수를 준비하고 있습니다.', 'Online applications are being prepared.');
   } else $('f').hidden = false;
 
+  // 드롭다운 값(value)은 한국어 그대로 시트에 저장하고, 보이는 글자만 영문으로 바꾼다
   const label = p => `${p.country} · ${p.org}`;
-  const opts = (first, list) => `<option value="">${first}</option>` + list.map(x => `<option>${x}</option>`).join('');
-  $('p1').innerHTML = opts('선택', DATA.programs.map(label));
-  $('p2').innerHTML = opts('없음', DATA.programs.map(label));
+  const progOf = s => DATA.programs.find(p => label(p) === s);
+  const showLabel = s => { const p = progOf(s); return p ? tr(p.country) + ' · ' + p.org : tr(s); };
+  const opts = (first, list, show = tr) => `<option value="">${esc(tr(first))}</option>` + list.map(x => `<option value="${esc(x)}">${esc(show(x))}</option>`).join('');
+  $('p1').innerHTML = opts('선택', DATA.programs.map(label), showLabel);
+  $('p2').innerHTML = opts('없음', DATA.programs.map(label), showLabel);
   const showProg = (sel, box) => sel.onchange = () => {
-    const p = DATA.programs.find(p => label(p) === sel.value);
-    box.textContent = p ? [p.track && '신청 구분: ' + p.track, '어학 기준: ' + (p.language || '추후 안내')].filter(Boolean).join('\n') : '';
+    const p = progOf(sel.value);
+    box.textContent = p ? [p.track && tx('신청 구분: ', 'Application type: ') + tr(p.track), tx('어학 기준: ', 'Language requirement: ') + tr(p.language || '추후 안내')].filter(Boolean).join('\n') : '';
   };
   showProg($('p1'), $('p1info'));
   showProg($('p2'), $('p2info'));
@@ -186,7 +200,7 @@
     showInfo();
     const p = DATA.programs.find(p => label(p) === $('p1').value);
     const f = (p && p.fields) || [];
-    $('field').innerHTML = f.length === 1 ? `<option>${f[0]}</option>` : opts('선택', f);
+    $('field').innerHTML = f.length === 1 ? `<option value="${esc(f[0])}">${esc(tr(f[0]))}</option>` : opts('선택', f);
     $('fieldBox').hidden = !f.length;
     $('field').required = f.length > 0;
   };
@@ -194,10 +208,9 @@
   $('vtype').innerHTML = opts('선택', DATA.vulnerable.map(v => v.type));
   $('vtype').onchange = () => {
     const v = DATA.vulnerable.find(v => v.type === $('vtype').value);
-    $('vinfo').textContent = v ? '지원 내용: ' + (v.support || '추후 안내') : '';
+    $('vinfo').textContent = v ? tx('지원 내용: ', 'Support: ') + tr(v.support || '추후 안내') : '';
   };
   // 첨부 파일 칸. name 을 주지 않아서 FormData 에는 안 들어가고 아래에서 따로 보낸다.
-  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   $('uploads').innerHTML = (DATA.uploads || []).map(u => `
     <label${u.vulnerable ? ' class="vdoc" hidden' : ''}>${esc(u.name)} ${u.required ? '' : '<small>선택</small>'}
       <input type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" data-doc="${esc(u.name)}"${u.required && !u.vulnerable ? ' required' : ''} data-req="${u.required ? 1 : ''}">
@@ -220,7 +233,7 @@
   const b64 = f => new Promise((ok, no) => {
     const r = new FileReader();
     r.onload = () => ok(r.result.split(',')[1]);
-    r.onerror = () => no(new Error('파일을 읽지 못했습니다.'));
+    r.onerror = () => no(new Error(tx('파일을 읽지 못했습니다.', 'Could not read the file.')));
     r.readAsDataURL(f);
   });
   async function readFiles() {
@@ -229,8 +242,8 @@
       const f = inp.files[0];
       if (!f || inp.closest('[hidden]')) continue;
       const type = TYPES[(f.name.split('.').pop() || '').toLowerCase()];
-      if (!type) throw new Error(`${inp.dataset.doc}: PDF, JPG, PNG 파일만 올릴 수 있습니다.`);
-      if (f.size > MAX) throw new Error(`${inp.dataset.doc}: 10MB 이하 파일만 올릴 수 있습니다.`);
+      if (!type) throw new Error(tr(inp.dataset.doc) + tx(': PDF, JPG, PNG 파일만 올릴 수 있습니다.', ': only PDF, JPG or PNG files.'));
+      if (f.size > MAX) throw new Error(tr(inp.dataset.doc) + tx(': 10MB 이하 파일만 올릴 수 있습니다.', ': the file must be 10MB or smaller.'));
       out.push({ field: inp.dataset.doc, name: f.name, type, data: await b64(f) });
     }
     return out;
@@ -238,18 +251,18 @@
 
   document.querySelectorAll('textarea').forEach(t => {
     const n = t.parentElement.querySelector('.count');
-    t.oninput = () => n.textContent = t.value.length + ' / 1500자';
+    t.oninput = () => n.textContent = t.value.length + tx(' / 1500자', ' / 1500 chars');
   });
 
   $('f').onsubmit = async e => {
     e.preventDefault();
     $('err').textContent = '';
-    if ($('pw').value !== $('pw2').value) return $('err').textContent = '비밀번호가 서로 다릅니다.';
-    if ($('p2').value && $('p2').value === $('p1').value) return $('err').textContent = '1지망과 2지망이 같습니다.';
+    if ($('pw').value !== $('pw2').value) return $('err').textContent = tx('비밀번호가 서로 다릅니다.', 'The passwords do not match.');
+    if ($('p2').value && $('p2').value === $('p1').value) return $('err').textContent = tx('1지망과 2지망이 같습니다.', 'Your 1st and 2nd choices are the same.');
     const data = Object.fromEntries(new FormData($('f')));
     if (data['취약계층'] !== '해당') { delete data['취약계층 구분']; delete data['취약계층 정보 동의']; }
     $('submit').disabled = true;
-    $('submit').textContent = '제출하는 중입니다…';
+    $('submit').textContent = tx('제출하는 중입니다…', 'Submitting…');
     try {
       const files = await readFiles();
       // text/plain 으로 보내야 Apps Script가 CORS 사전요청 없이 받는다
@@ -260,11 +273,14 @@
       $('done').hidden = false;
       scrollTo(0, 0);
     } catch (err) {
-      $('err').textContent = '제출하지 못했습니다. ' + (err.message || '') + ' 잠시 후 다시 시도하거나 국제처로 연락해 주세요.';
+      $('err').textContent = tx('제출하지 못했습니다. ', 'Your application was not submitted. ') + tr(err.message || '')
+        + tx(' 잠시 후 다시 시도하거나 국제처로 연락해 주세요.', ' Please try again later or contact the Office of International Affairs.');
       $('submit').disabled = false;
-      $('submit').textContent = '신청서 제출';
+      $('submit').textContent = tx('신청서 제출', 'Submit application');
     }
   };
+
+  translate(document.body);
 </script>
 </body>
 </html>

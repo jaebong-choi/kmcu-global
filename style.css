@@ -37,6 +37,7 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; }
   background: var(--soft); color: var(--text); font: inherit; font-size: 13px; font-weight: 500; text-decoration: none; cursor: pointer;
 }
 .pill:hover { background: var(--line); }
+.pill .txt { margin-left: 5px; }
 
 /* ---------- hero ---------- */
 .hero { display: grid; grid-template-columns: 1fr 420px; gap: 40px; align-items: center; padding-top: 56px; padding-bottom: 24px; }
@@ -74,7 +75,7 @@ h1, h2, h3 { margin: 0; letter-spacing: -0.02em; }
 .tbd { color: var(--muted); opacity: .75; }
 
 /* 파견 프로그램 */
-.progs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.progs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .prog { background: var(--soft); border-radius: 16px; padding: 20px 20px 16px; }
 .prog .head { display: flex; align-items: center; gap: 12px; }
 .prog .head img { width: 40px; height: 27px; object-fit: cover; border-radius: 5px; box-shadow: 0 0 0 1px var(--line); }
@@ -181,7 +182,10 @@ table { border-collapse: collapse; width: 100%; }
 }
 @media (max-width: 600px) {
   .site-header .inner { height: 58px; gap: 10px; }
-  .logo img { height: 28px; }
+  .logo img { height: 26px; }
+  .util { gap: 4px; }
+  .pill { padding: 0 10px; font-size: 12.5px; white-space: nowrap; }
+  .pill .txt { display: none; }
   .site-name, .hide-sm { display: none; }
   .hero { padding-top: 32px; }
   .hero h1 { font-size: 32px; }
@@ -189,7 +193,8 @@ table { border-collapse: collapse; width: 100%; }
   .card { padding-bottom: 20px; }
   .sec-title { font-size: 24px; }
   .page-head h1 { font-size: 28px; }
-  .progs, .two, .form .row { grid-template-columns: 1fr; }
+  .progs, .two, .form .row { grid-template-columns: minmax(0, 1fr); }
+  .info th { white-space: normal; width: 34%; }
   .steps { grid-template-columns: 1fr 1fr; }
   .crit td { padding: 12px 2px; }
   .crit td:first-child { white-space: normal; }

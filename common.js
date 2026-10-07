@@ -1,13 +1,29 @@
-// 모든 페이지 공통: 다크 모드 버튼, 문의처. data.js 다음에 불러온다.
+// 모든 페이지 공통: 다크 모드·영문 버튼, 문의처. data.js, i18n.js 다음에 불러온다.
 (() => {
   const root = document.documentElement;
   const btn = document.querySelector('[data-act="theme"]');
-  const label = () => (btn.textContent = root.dataset.theme === 'dark' ? '라이트 모드' : '다크 모드');
+  // 휴대폰에서는 글자를 숨기고 아이콘만 보인다 (style.css .txt)
+  const label = () => {
+    const dark = root.dataset.theme === 'dark';
+    btn.innerHTML = `<span aria-hidden="true">${dark ? '☀' : '☾'}</span><span class="txt">${dark ? tx('라이트 모드', 'Light mode') : tx('다크 모드', 'Dark mode')}</span>`;
+    btn.setAttribute('aria-label', btn.querySelector('.txt').textContent);
+  };
   label();
   btn.onclick = () => {
     root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
     try { localStorage.setItem('theme', root.dataset.theme); } catch (e) {}
     label();
+  };
+
+  // 언어 전환은 새로고침 방식. ?preview 같은 다른 주소 옵션은 그대로 둔다.
+  const lang = document.querySelector('[data-act="lang"]');
+  lang.textContent = EN ? '한국어' : 'ENG';
+  lang.onclick = () => {
+    const next = EN ? 'ko' : 'en';
+    try { localStorage.setItem('lang', next); } catch (e) {}
+    const q = new URLSearchParams(location.search);
+    q.set('lang', next);
+    location.search = q.toString();
   };
 
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
