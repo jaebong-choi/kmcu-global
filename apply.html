@@ -3,18 +3,34 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>참가 신청서 · 계명문화대학교 국제처</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link rel="stylesheet" href="style.css">
+<title>참가 신청서 | 계명문화대학교 국제처</title>
+<script>
+  var t; try { t = localStorage.getItem("theme"); } catch (e) {}
+  document.documentElement.dataset.theme = t || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
-<header><div class="wrap"><a href="index.html" style="text-decoration:none"><b>계명문화대학교 국제처</b></a><span>참가 신청서</span></div></header>
+<header class="site-header">
+  <div class="inner">
+    <a class="logo" href="https://www.kmcu.ac.kr/" target="_blank" rel="noopener"><img src="logo.png" alt="계명문화대학교" width="229" height="47"></a>
+    <a class="site-name" href="index.html">글로벌 현장학습</a>
+    <nav class="util">
+      <a class="pill hide-sm" href="index.html">모집 안내</a>
+      <a class="pill" href="check.html">지원서 확인</a>
+      <button class="pill" type="button" data-act="theme">다크 모드</button>
+    </nav>
+  </div>
+</header>
 
-<main class="wrap">
-  <h1 id="title" style="margin-top:28px"></h1>
-  <p class="lead">신청서는 1차 접수용입니다. 성적증명서, 어학성적표, 취약계층 증빙서류는 안내에 따라 따로 제출합니다.</p>
+<main class="inner narrow">
+  <div class="page-head">
+    <h1 id="title"></h1>
+    <p>1차 접수용 신청서입니다. 성적증명서, 어학성적표, 취약계층 증빙서류는 안내에 따라 따로 제출합니다.</p>
+  </div>
 
-  <p class="msg" id="closed" hidden></p>
+  <p class="notice-box" id="closed" hidden></p>
 
   <form class="form" id="f" hidden>
     <fieldset>
@@ -52,10 +68,10 @@
       <legend>지원 프로그램</legend>
       <label>신청 구분<select name="신청 구분" required><option value="">선택</option><option>일반 지정형</option><option>일반 자율형</option><option>유아교육 트랙</option></select></label>
       <label>희망 파견국가 (1지망)<select name="1지망" id="p1" required></select></label>
-      <div class="info" id="p1info"></div>
+      <div class="hint" id="p1info"></div>
       <label id="fieldBox" hidden>신청 분야 <small>1지망 기준</small><select name="신청 분야" id="field"></select></label>
       <label>희망 파견국가 (2지망) <small>선택</small><select name="2지망" id="p2"></select></label>
-      <div class="info" id="p2info"></div>
+      <div class="hint" id="p2info"></div>
       <div class="row">
         <label>희망 분야<input name="희망 분야" required maxlength="40" placeholder="미용헤어, 호텔서비스, 유아교육"></label>
         <label>희망 업무<input name="희망 업무" required maxlength="40" placeholder="살롱 업무, 프런트, 유치원"></label>
@@ -78,8 +94,8 @@
         <label><input type="radio" name="취약계층" value="해당 없음"> 해당 없음</label>
       </div>
       <div id="vul" hidden>
-        <label style="margin-top:14px">구분<select name="취약계층 구분" id="vtype"></select></label>
-        <div class="info" id="vinfo"></div>
+        <label>구분<select name="취약계층 구분" id="vtype"></select></label>
+        <div class="hint" id="vinfo"></div>
         <label><input type="checkbox" name="취약계층 정보 동의" value="동의" id="vagree"> 취약계층 정보는 선발 가산점과 지원 내용 확인에만 쓰는 것에 동의합니다</label>
       </div>
     </fieldset>
@@ -103,33 +119,35 @@
 
     <fieldset>
       <legend>조회용 비밀번호</legend>
-      <p class="lead" style="font-size:15px">접수번호와 이 비밀번호로 제출 내용과 진행 상태를 확인합니다.</p>
+      <p class="muted" style="margin:0 0 14px;font-size:14.5px">접수번호와 이 비밀번호로 제출 내용과 진행 상태를 확인합니다.</p>
       <div class="row">
         <label>비밀번호 <small>6자 이상</small><input type="password" id="pw" required minlength="6" maxlength="50" autocomplete="new-password"></label>
         <label>비밀번호 확인<input type="password" id="pw2" required autocomplete="new-password"></label>
       </div>
     </fieldset>
 
-    <button class="btn" id="submit">신청서 제출</button>
-    <p class="msg" id="err"></p>
+    <div class="submit">
+      <button class="btn" id="submit">신청서 제출</button>
+      <p class="msg" id="err"></p>
+    </div>
   </form>
 
-  <div class="done" id="done" hidden>
+  <div class="card done" id="done" hidden>
     <p>신청서가 접수되었습니다. 접수번호를 꼭 적어 두세요.</p>
     <strong id="no"></strong>
-    <p><a href="check.html">내 지원서 확인</a></p>
+    <p>접수번호와 비밀번호로 제출 내용과 진행 상태를 확인할 수 있습니다.</p>
+    <a class="btn" href="check.html">내 지원서 확인</a>
   </div>
 </main>
 
-<footer><div class="wrap" id="contact"></div></footer>
+<footer class="site-footer"><div class="inner" id="contact"></div></footer>
 
-<script src="data.js"></script>
+<script src="data.js?v=2"></script>
+<script src="common.js?v=2"></script>
 <script>
   const $ = id => document.getElementById(id);
   const today = new URLSearchParams(location.search).get('today') || new Date().toLocaleDateString('sv');
   const cur = DATA.rounds.find(r => r.open && r.open <= today && today <= r.close);
-  const c = DATA.contact;
-  $('contact').textContent = '문의 ' + [c.team, c.phone, c.email, c.place].filter(Boolean).join(' · ');
   $('title').textContent = DATA.year + ' 글로벌 현장학습 참가 신청서';
 
   // ?preview 를 붙이면 접수 기간이 아니어도 양식을 볼 수 있다 (제출은 막힘)

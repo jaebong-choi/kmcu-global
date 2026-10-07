@@ -3,82 +3,107 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>글로벌 현장학습 모집 · 계명문화대학교 국제처</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link rel="stylesheet" href="style.css">
+<title>글로벌 현장학습 모집 | 계명문화대학교 국제처</title>
+<script>
+  // 테마를 그리기 전에 적용 (저장값 → 기기 설정). 해외 프로그램 지도와 설정을 같이 쓴다.
+  var t; try { t = localStorage.getItem("theme"); } catch (e) {}
+  document.documentElement.dataset.theme = t || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<!-- 파일을 고쳐 올릴 때마다 ?v= 숫자를 올려야 방문자 브라우저가 옛 파일을 쓰지 않습니다 -->
+<link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
-<header><div class="wrap"><b>계명문화대학교 국제처</b><span>글로벌 현장학습</span></div></header>
 
-<main class="wrap">
-  <div class="notice">
-    <span class="tag" id="status"></span>
-    <h1 id="title"></h1>
-    <p class="lead" id="lead"></p>
-    <div class="rounds" id="rounds"></div>
-    <div class="apply"><a class="btn" id="applyBtn"></a><span id="dday"></span></div>
-    <div class="sub-nav"><a href="check.html">내 지원서 확인</a></div>
+<header class="site-header">
+  <div class="inner">
+    <a class="logo" href="https://www.kmcu.ac.kr/" target="_blank" rel="noopener"><img src="logo.png" alt="계명문화대학교" width="229" height="47"></a>
+    <a class="site-name" href="index.html">글로벌 현장학습</a>
+    <nav class="util">
+      <a class="pill hide-sm" href="https://jaebong-choi.github.io/kmcu-global-map/">해외 프로그램 지도</a>
+      <a class="pill" href="check.html">지원서 확인</a>
+      <button class="pill" type="button" data-act="theme">다크 모드</button>
+    </nav>
   </div>
+</header>
 
-  <section>
-    <h2>파견 프로그램</h2>
-    <div id="programs"></div>
+<main>
+  <section class="hero inner">
+    <div>
+      <span class="status" id="status"></span>
+      <h1 id="title"></h1>
+      <p id="lead"></p>
+    </div>
+    <div class="card">
+      <h2 class="card-title">모집 일정</h2>
+      <div class="rounds" id="rounds"></div>
+      <a class="btn" id="applyBtn"></a>
+      <div class="card-foot"><span id="dday"></span><a href="check.html">내 지원서 확인 →</a></div>
+    </div>
   </section>
 
-  <section>
-    <h2>진행 일정</h2>
-    <ol class="flow" id="schedule"></ol>
+  <section class="section inner">
+    <h2 class="sec-title">파견 프로그램</h2>
+    <div class="progs" id="programs"></div>
   </section>
 
-  <section class="two">
-    <div><h2>지원 자격</h2><ul class="dots" id="eligibility"></ul></div>
-    <div><h2>제출 서류</h2><ul class="dots" id="documents"></ul></div>
+  <section class="section inner">
+    <h2 class="sec-title">진행 일정</h2>
+    <ol class="steps" id="schedule"></ol>
   </section>
 
-  <section>
-    <h2>선발 기준</h2>
+  <section class="section inner two">
+    <div class="box"><h3>지원 자격</h3><ul id="eligibility"></ul></div>
+    <div class="box"><h3>제출 서류</h3><ul id="documents"></ul></div>
+  </section>
+
+  <section class="section inner">
+    <h2 class="sec-title">선발 기준</h2>
     <table class="crit" id="criteria"></table>
   </section>
 
-  <section>
-    <h2>비용</h2>
+  <section class="section inner">
+    <h2 class="sec-title">비용과 지원</h2>
     <p id="cost"></p>
-    <h2 style="margin-top:28px">취업취약계층 지원</h2>
-    <table class="crit" id="vulnerable"></table>
+    <h3 style="font-size:19px;font-weight:800;margin:28px 0 6px">취업취약계층 지원</h3>
+    <table class="crit plain" id="vulnerable"></table>
   </section>
 
-  <section class="faq">
-    <h2>자주 묻는 질문</h2>
+  <section class="section inner faq">
+    <h2 class="sec-title">자주 묻는 질문</h2>
     <div id="faq"></div>
+    <p class="note">※ 파견 국가·인원·지원 내용은 사업 선정 결과와 현지 사정에 따라 바뀔 수 있습니다. 지원 전 국제처 공지사항의 모집공고를 꼭 확인하세요.</p>
   </section>
 </main>
 
-<footer><div class="wrap" id="contact"></div></footer>
+<footer class="site-footer"><div class="inner" id="contact"></div></footer>
 
-<script src="data.js"></script>
+<script src="data.js?v=2"></script>
+<script src="common.js?v=2"></script>
 <script>
   const TBD = '<span class="tbd">추후 안내</span>';
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const v = s => s ? esc(s) : TBD;
   const $ = id => document.getElementById(id);
-  const fmt = d => d ? d.replace(/^(\d{4})-0?(\d+)-0?(\d+)$/, '$1. $2. $3.') : '';
+  const fmt = d => d ? d.replace(/^(\d{4})-0?(\d+)-0?(\d+)$/, '$2월 $3일') : '';
+  const FLAG = { 영국: 'gb', 호주: 'au', 말레이시아: 'my', 캐나다: 'ca', 미국: 'us', 일본: 'jp', 뉴질랜드: 'nz', 아일랜드: 'ie', 필리핀: 'ph', 싱가포르: 'sg', 베트남: 'vn', 중국: 'cn', 대만: 'tw', 독일: 'de' };
 
   // ?today=2027-01-15 로 날짜를 바꿔 상태 표시를 미리 볼 수 있다
   const today = new URLSearchParams(location.search).get('today') || new Date().toLocaleDateString('sv');
   const cur = DATA.rounds.find(r => r.open && r.open <= today && today <= r.close);
   const next = DATA.rounds.find(r => r.open && today < r.open);
 
-  document.title = DATA.title + ' · 계명문화대학교 국제처';
-  $('title').textContent = DATA.title;
+  document.title = DATA.title + ' | 계명문화대학교 국제처';
+  $('title').innerHTML = esc(DATA.title).replace(' 참가자', '<br>참가자');
   $('lead').textContent = DATA.lead;
 
   const st = $('status');
-  if (cur) { st.textContent = cur.name + ' 접수 중'; st.className = 'tag open'; }
-  else if (next) { st.textContent = '모집 예정'; st.className = 'tag soon'; }
+  if (cur) { st.textContent = cur.name + ' 접수 중'; st.className = 'status open'; }
+  else if (next) { st.textContent = '모집 예정'; st.className = 'status soon'; }
   else st.textContent = '모집 마감';
 
   $('rounds').innerHTML = DATA.rounds.map(r =>
-    `<div class="round${r === cur ? ' now' : ''}"><small>${esc(r.name)}</small>${r.open ? fmt(r.open) + ' ~ ' + fmt(r.close) : TBD}</div>`).join('');
+    `<div class="round${r === cur ? ' now' : ''}"><span>${esc(r.name)}</span><b>${r.open ? fmt(r.open) + ' ~ ' + fmt(r.close) : TBD}</b></div>`).join('');
 
   const btn = $('applyBtn');
   if (cur && DATA.apiUrl) { btn.textContent = '온라인 지원하기'; btn.href = 'apply.html'; }
@@ -89,22 +114,26 @@
   else if (next) $('dday').textContent = `${next.name} 시작까지 ${days(today, next.open)}일`;
 
   $('programs').innerHTML = DATA.programs.map(p => `
-    <details class="prog">
-      <summary><span class="c">${esc(p.country)}</span><span class="o">${esc(p.org)}</span></summary>
-      <dl>
-        <dt>대상 학과</dt><dd>${v(p.majors)}</dd>
-        <dt>모집 인원</dt><dd>${p.seats ? esc(p.seats) + '명' : TBD}</dd>
-        <dt>파견 기간</dt><dd>${v(p.period)}</dd>
-        ${p.track ? `<dt>신청 구분</dt><dd>${esc(p.track)}</dd>` : ""}
-        <dt>과정</dt><dd>${v(p.course)}</dd>
-        <dt>어학 기준</dt><dd>${v(p.language)}</dd>
-        ${p.note ? `<dt>참고</dt><dd>${esc(p.note)}</dd>` : ''}
-      </dl>
-    </details>`).join('');
+    <article class="prog">
+      <div class="head">
+        ${FLAG[p.country] ? `<img src="https://flagcdn.com/w80/${FLAG[p.country]}.png" alt="">` : ''}
+        <div><h3>${esc(p.country)}</h3><p>${esc(p.org)}</p></div>
+        ${p.track ? `<span class="track">${esc(p.track)}</span>` : ''}
+      </div>
+      <table class="info">
+        <tr><th>대상 학과</th><td>${v(p.majors)}</td></tr>
+        <tr><th>모집 인원</th><td>${p.seats ? esc(p.seats) + '명' : TBD}</td></tr>
+        <tr><th>파견 기간</th><td>${v(p.period)}</td></tr>
+        <tr><th>과정</th><td>${v(p.course)}</td></tr>
+        <tr><th>어학 기준</th><td>${v(p.language)}</td></tr>
+        ${p.note ? `<tr><th>참고</th><td>${esc(p.note)}</td></tr>` : ''}
+      </table>
+    </article>`).join('');
 
-  $('schedule').innerHTML = DATA.schedule.map(([n, d]) => `<li>${esc(n)}<small>${d ? esc(d) : '추후 안내'}</small></li>`).join('');
+  $('schedule').innerHTML = DATA.schedule.map(([n, d], i) =>
+    `<li><span class="n">${i + 1}단계</span><b>${esc(n)}</b>${d ? `<time>${esc(d)}</time>` : TBD}</li>`).join('');
 
-  const list = a => a.filter(Boolean).map(x => `<li>${esc(x)}</li>`).join('') + `<li>${TBD}</li>`.repeat(a.some(x => !x) ? 1 : 0);
+  const list = a => a.filter(Boolean).map(x => `<li>${esc(x)}</li>`).join('') || `<li>${TBD}</li>`;
   $('eligibility').innerHTML = list(DATA.eligibility);
   $('documents').innerHTML = list(DATA.documents);
   $('criteria').innerHTML = DATA.criteria.map(r => `<tr>${r.map(x => `<td>${esc(x)}</td>`).join('')}</tr>`).join('');
@@ -112,9 +141,6 @@
   $('vulnerable').innerHTML = DATA.vulnerable.map(x => `<tr><td>${esc(x.type)}</td><td>${v(x.support)}</td></tr>`).join('');
 
   $('faq').innerHTML = DATA.faq.filter(([, a]) => a).map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('');
-
-  const c = DATA.contact;
-  $('contact').innerHTML = `문의 ${esc(c.team)}` + [c.phone, c.email, c.place].filter(Boolean).map(x => ' · ' + esc(x)).join('');
 </script>
 </body>
 </html>
