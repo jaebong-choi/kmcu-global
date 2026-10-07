@@ -9,7 +9,7 @@
   document.documentElement.dataset.theme = t || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
 </script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 <header class="site-header">
@@ -27,7 +27,7 @@
 <main class="inner narrow">
   <div class="page-head">
     <h1 id="title"></h1>
-    <p>1차 접수용 신청서입니다. 성적증명서, 어학성적표, 취약계층 증빙서류는 안내에 따라 따로 제출합니다.</p>
+    <p>1차 접수용 신청서입니다. 성적증명서, 어학성적표, 취약계층 증빙서류는 신청서에 파일로 올릴 수 있습니다. 지금 없으면 비워 두고 안내에 따라 나중에 제출하세요.</p>
     <div class="ask" id="ask"></div>
   </div>
 
@@ -36,7 +36,7 @@
   <form class="form" id="f" hidden>
     <fieldset>
       <legend>개인정보 수집·이용 동의</legend>
-      <div class="terms">수집 항목: 성명, 성별, 학번, 학과, 계열, 학년, 지도교수, 이수학점, 평점, 연락처, 비상연락처, 이메일, 주소, 어학성적, 현장학습 계획서
+      <div class="terms">수집 항목: 성명, 성별, 학번, 학과, 계열, 학년, 지도교수, 이수학점, 평점, 연락처, 비상연락처, 이메일, 주소, 어학성적, 현장학습 계획서, 첨부 서류(성적증명서, 어학성적표, 취약계층 증빙)
 목적: 글로벌 현장학습 참가자 선발 및 사업 운영 (한국전문대학교육협의회 제출 포함)
 보유 기간: 사업 결과보고 완료 시까지
 동의하지 않으면 지원할 수 없습니다.</div>
@@ -109,6 +109,12 @@
     </fieldset>
 
     <fieldset>
+      <legend>첨부 서류</legend>
+      <p class="muted" style="margin:0 0 14px;font-size:14.5px">PDF, JPG, PNG 파일을 한 파일당 10MB까지 올릴 수 있습니다. 휴대폰으로 찍은 사진도 됩니다.</p>
+      <div id="uploads"></div>
+    </fieldset>
+
+    <fieldset>
       <legend>선발 시 의무사항</legend>
       <div class="terms">· 월드잡플러스 가입과 이러닝 이수, 파견 전 사전교육 참여
 · 프로그램 종료 후 공인어학시험 성적표 제출, 핵심역량진단평가(사전·사후)와 만족도조사 참여
@@ -143,8 +149,8 @@
 
 <footer class="site-footer"><div class="inner" id="contact"></div></footer>
 
-<script src="data.js?v=3"></script>
-<script src="common.js?v=3"></script>
+<script src="data.js?v=4"></script>
+<script src="common.js?v=4"></script>
 <script>
   const $ = id => document.getElementById(id);
   const today = new URLSearchParams(location.search).get('today') || new Date().toLocaleDateString('sv');
@@ -190,11 +196,45 @@
     const v = DATA.vulnerable.find(v => v.type === $('vtype').value);
     $('vinfo').textContent = v ? '지원 내용: ' + (v.support || '추후 안내') : '';
   };
+  // 첨부 파일 칸. name 을 주지 않아서 FormData 에는 안 들어가고 아래에서 따로 보낸다.
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  $('uploads').innerHTML = (DATA.uploads || []).map(u => `
+    <label${u.vulnerable ? ' class="vdoc" hidden' : ''}>${esc(u.name)} ${u.required ? '' : '<small>선택</small>'}
+      <input type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" data-doc="${esc(u.name)}"${u.required && !u.vulnerable ? ' required' : ''} data-req="${u.required ? 1 : ''}">
+    </label>`).join('');
+
   document.querySelectorAll('[name=취약계층]').forEach(r => r.onchange = () => {
     const on = r.value === '해당' && r.checked;
     $('vul').hidden = !on;
     $('vtype').required = $('vagree').required = on;
+    document.querySelectorAll('.vdoc').forEach(l => {
+      l.hidden = !on;
+      const inp = l.querySelector('input');
+      inp.required = on && !!inp.dataset.req;
+      if (!on) inp.value = '';
+    });
   });
+
+  const TYPES = { pdf: 'application/pdf', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png' };
+  const MAX = 10 * 1024 * 1024;
+  const b64 = f => new Promise((ok, no) => {
+    const r = new FileReader();
+    r.onload = () => ok(r.result.split(',')[1]);
+    r.onerror = () => no(new Error('파일을 읽지 못했습니다.'));
+    r.readAsDataURL(f);
+  });
+  async function readFiles() {
+    const out = [];
+    for (const inp of document.querySelectorAll('#uploads input[type=file]')) {
+      const f = inp.files[0];
+      if (!f || inp.closest('[hidden]')) continue;
+      const type = TYPES[(f.name.split('.').pop() || '').toLowerCase()];
+      if (!type) throw new Error(`${inp.dataset.doc}: PDF, JPG, PNG 파일만 올릴 수 있습니다.`);
+      if (f.size > MAX) throw new Error(`${inp.dataset.doc}: 10MB 이하 파일만 올릴 수 있습니다.`);
+      out.push({ field: inp.dataset.doc, name: f.name, type, data: await b64(f) });
+    }
+    return out;
+  }
 
   document.querySelectorAll('textarea').forEach(t => {
     const n = t.parentElement.querySelector('.count');
@@ -209,9 +249,11 @@
     const data = Object.fromEntries(new FormData($('f')));
     if (data['취약계층'] !== '해당') { delete data['취약계층 구분']; delete data['취약계층 정보 동의']; }
     $('submit').disabled = true;
+    $('submit').textContent = '제출하는 중입니다…';
     try {
+      const files = await readFiles();
       // text/plain 으로 보내야 Apps Script가 CORS 사전요청 없이 받는다
-      const r = await fetch(DATA.apiUrl, { method: 'POST', body: JSON.stringify({ action: 'apply', password: $('pw').value, data }) }).then(r => r.json());
+      const r = await fetch(DATA.apiUrl, { method: 'POST', body: JSON.stringify({ action: 'apply', password: $('pw').value, data, files }) }).then(r => r.json());
       if (!r.ok) throw new Error(r.error);
       $('f').hidden = true;
       $('no').textContent = r.no;
@@ -220,6 +262,7 @@
     } catch (err) {
       $('err').textContent = '제출하지 못했습니다. ' + (err.message || '') + ' 잠시 후 다시 시도하거나 국제처로 연락해 주세요.';
       $('submit').disabled = false;
+      $('submit').textContent = '신청서 제출';
     }
   };
 </script>

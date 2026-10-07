@@ -119,6 +119,15 @@ const DATA = {
     '취업취약계층은 우선 선발 대상이며, 구분에 따라 지원 내용이 다릅니다.',
   ],
 
+  // 지원서에서 받는 첨부 파일 (PDF·JPG·PNG, 한 파일당 10MB). 학교 드라이브의 지원자별 폴더에 저장된다.
+  // required: true 로 바꾸면 그 파일을 올려야 제출된다.
+  // vulnerable: true 는 취약계층 "해당"을 고른 학생에게만 보인다.
+  uploads: [
+    { name: '성적증명서', required: false },
+    { name: '공인어학성적표', required: false },
+    { name: '취업취약계층 증빙서류', required: false, vulnerable: true },
+  ],
+
   documents: [
     '참가 신청서와 현장학습 계획서 (온라인 작성)',
     '성적증명서',

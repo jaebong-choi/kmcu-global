@@ -14,6 +14,8 @@
 // - "상태" 열을 고치면 학생 조회 화면에 그대로 보인다. 예: 접수 → 서류 합격 → 최종 합격
 //   "취소"로 바꾼 지원자는 신청명단 엑셀에서 빠진다.
 // - "비밀번호" 열은 암호화된 값이라 지우거나 고치지 말 것.
+// - 첨부 파일은 시트와 같은 폴더의 "2027 글로벌 현장학습 첨부파일" 폴더에 지원자별로 저장되고,
+//   "첨부-성적증명서" 같은 열에 파일 링크가 남는다.
 //
 // 신청명단 엑셀 (전대협 서식)
 // 1. 시트를 새로고침하면 메뉴에 "글로벌 현장학습"이 생긴다.
@@ -28,6 +30,8 @@ const FIXED = ['접수번호', '접수일시', '상태', '비밀번호'];
 const REQUIRED = ['개인정보 동의', '성명(한글)', '학번', '휴대폰', '이메일', '1지망', '의무사항 확인'];
 const DATA_URL = 'https://raw.githubusercontent.com/jaebong-choi/kmcu-global/main/data.js';
 const TPL = ['신청자명단', '담당자'];
+const ATTACH = '첨부-';  // 첨부 파일 링크가 들어가는 열 이름 앞머리
+const FILE_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
 
 function doPost(e) {
   let out;
@@ -43,13 +47,21 @@ function doPost(e) {
 function apply(req) {
   const data = req.data;
   if (!data || typeof data !== 'object') return fail('지원서 내용이 없습니다.');
-  const keys = Object.keys(data);
-  if (keys.length > 50) return fail('항목이 너무 많습니다.');
-  for (const k of keys) {
-    if (k.length > 40 || FIXED.includes(k) || typeof data[k] !== 'string' || data[k].length > 2000) return fail('입력값을 확인해 주세요.');
+  if (Object.keys(data).length > 50) return fail('항목이 너무 많습니다.');
+  for (const k of Object.keys(data)) {
+    if (k.length > 40 || FIXED.includes(k) || k.startsWith(ATTACH) || typeof data[k] !== 'string' || data[k].length > 2000) return fail('입력값을 확인해 주세요.');
   }
   for (const k of REQUIRED) if (!data[k]) return fail(k + ' 항목이 비어 있습니다.');
   if (typeof req.password !== 'string' || req.password.length < 6) return fail('비밀번호는 6자 이상이어야 합니다.');
+
+  const files = Array.isArray(req.files) ? req.files : [];
+  if (files.length > 5) return fail('첨부 파일이 너무 많습니다.');
+  for (const f of files) {
+    if (!f || typeof f.field !== 'string' || !f.field || f.field.length > 30 || typeof f.data !== 'string' || !FILE_TYPES.includes(f.type)) return fail('첨부 파일은 PDF, JPG, PNG만 올릴 수 있습니다.');
+    if (f.data.length > 14 * 1024 * 1024) return fail('첨부 파일은 한 파일당 10MB까지 올릴 수 있습니다.');
+  }
+  const folder = files.length ? saveFiles(files, data) : null;
+  const keys = Object.keys(data);
 
   const lock = LockService.getScriptLock();
   lock.waitLock(20000);
@@ -73,10 +85,35 @@ function apply(req) {
       h === '비밀번호' ? salt + ':' + hash(salt, req.password) :
       safe(data[h] || ''));
     sh.getRange(sh.getLastRow() + 1, 1, 1, row.length).setNumberFormat('@').setValues([row]);
+    if (folder) folder.setName(no + '_' + folder.getName());
     return { ok: true, no: no };
   } finally {
     lock.releaseLock();
   }
+}
+
+// 첨부 파일을 "YEAR 글로벌 현장학습 첨부파일/학번_성명" 폴더에 저장하고 data 에 링크를 넣는다.
+// 폴더는 공유하지 않으므로 시트 주인(학교 계정)만 열 수 있다.
+function saveFiles(files, data) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  let root;
+  try {
+    const name = YEAR + ' 글로벌 현장학습 첨부파일';
+    const parent = DriveApp.getFileById(SpreadsheetApp.getActiveSpreadsheet().getId()).getParents().next();
+    const it = parent.getFoldersByName(name);
+    root = it.hasNext() ? it.next() : parent.createFolder(name);
+  } finally {
+    lock.releaseLock();
+  }
+  const clean = s => String(s).replace(/[\\/:*?"<>|]/g, '').slice(0, 60);
+  const folder = root.createFolder(clean(data['학번']) + '_' + clean(data['성명(한글)']));
+  files.forEach(f => {
+    const ext = { 'application/pdf': '.pdf', 'image/jpeg': '.jpg', 'image/png': '.png' }[f.type];
+    const blob = Utilities.newBlob(Utilities.base64Decode(f.data), f.type, clean(f.field) + ext);
+    data[ATTACH + clean(f.field)] = folder.createFile(blob).getUrl();
+  });
+  return folder;
 }
 
 function check(req) {
@@ -97,7 +134,8 @@ function check(req) {
     return fail('접수번호 또는 비밀번호가 맞지 않습니다.');
   }
   const data = {};
-  head.forEach((h, i) => { if (h !== '비밀번호' && h !== '상태') data[h] = r[i]; });
+  // 첨부 파일 링크는 학생에게 보여 주지 않고 제출 여부만 알린다
+  head.forEach((h, i) => { if (h !== '비밀번호' && h !== '상태') data[h] = h.startsWith(ATTACH) && r[i] ? '제출함' : r[i]; });
   return { ok: true, status: r[head.indexOf('상태')], data: data };
 }
 
