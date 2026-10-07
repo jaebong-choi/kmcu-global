@@ -31,6 +31,13 @@ const DATA = {
   // 국가·기관은 2026년 운영 기준. 2027년 확정되면 교체.
   // track: 지원서의 신청 구분 (일반 지정형 / 일반 자율형 / 유아교육 트랙)
   // language: 이 프로그램의 어학 기준. 지원서에서 국가를 고르면 그대로 보여 준다.
+  //
+  // 아래 값은 신청명단 엑셀(전대협 서식)에 들어간다. 2026년 명단 기준이니 2027년 확정되면 교체.
+  // - region: 파견권역 (가-권역 / 나-권역 / 다-권역). 국고보조금이 이걸로 정해진다.
+  // - semester: 파견 학기, weeks: 파견 기간(주), credits: 현장실습 부여학점, visa: 비자유형
+  // - formOrg: 서식의 교육기관 이름. 지정형은 서식 목록에 있는 이름 그대로 써야 한다. 예: '영국(BSDC)'
+  // - fields: 신청 분야. 서식 목록에 있는 이름 그대로. 지원서에서 이 중에 고른다.
+  //   서식 목록: 간호(보건) 미래자동차 호텔∙조리 경영 헤어∙뷰티 디자인 IT서비스 동물보건 유아교육 창업트랙
   programs: [
     {
       country: '영국',
@@ -42,6 +49,8 @@ const DATA = {
       course: '현지 어학 8주 + 산업체 실습 8주',
       language: '',
       note: '',
+      region: '가-권역', semester: '2학기', weeks: 16, credits: 20, visa: '',
+      formOrg: '영국(BSDC)', fields: ['헤어∙뷰티'],
     },
     {
       country: '호주',
@@ -53,6 +62,8 @@ const DATA = {
       course: '현지 어학 8주 + 산업체 실습 8주',
       language: '',
       note: '',
+      region: '가-권역', semester: '2학기', weeks: 16, credits: 20, visa: '',
+      formOrg: '호주(NSW)', fields: ['호텔∙조리', '디자인', '헤어∙뷰티'],
     },
     {
       country: '말레이시아',
@@ -64,6 +75,8 @@ const DATA = {
       course: '현지 어학 8주 + 산업체 실습 8주',
       language: '',
       note: '',
+      region: '다-권역', semester: '2학기', weeks: 16, credits: 20, visa: '',
+      formOrg: 'SEGI', fields: ['헤어∙뷰티', '간호(보건)'],
     },
     {
       country: '캐나다',
@@ -75,18 +88,29 @@ const DATA = {
       course: '현지 어학 + 유아교육기관 실습',
       language: '',
       note: '',
+      region: '가-권역', semester: '1학기', weeks: 12, credits: '', visa: '',
+      formOrg: '캐나다(CNA)', fields: ['유아교육'],
     },
   ],
 
+  // 1인당 예산. 신청명단 엑셀의 예산 칸에 들어간다.
+  // grant: 파견권역별 국고보조금(원), matching·self: 국고보조금 대비 대학 대응투자율·학생 자비부담율(%)
+  budget: {
+    grant: { '가-권역': 9000000, '나-권역': 7000000, '다-권역': 5000000 },
+    matching: 20,
+    self: 30,
+  },
+
   // 취업취약계층 구분과 구분별 지원 내용. 지원서에서 고르면 support 문구가 보인다.
   // 구분을 늘리거나 줄이면 지원서 선택지도 같이 바뀐다.
+  // group: 신청명단 엑셀의 취약계층 칸에 들어가는 서식 이름.
   vulnerable: [
-    { type: '기초생활수급자', support: '' },
-    { type: '차상위계층', support: '' },
-    { type: '학자금 지원구간 1구간', support: '' },
-    { type: '학자금 지원구간 2구간', support: '' },
-    { type: '학자금 지원구간 3구간', support: '' },
-    { type: '다문화가정', support: '' },
+    { type: '기초생활수급자', support: '', group: '경제적취약(기초생활/차상위)' },
+    { type: '차상위계층', support: '', group: '경제적취약(기초생활/차상위)' },
+    { type: '학자금 지원구간 1구간', support: '', group: '경제적취약(학자금1~3구간)' },
+    { type: '학자금 지원구간 2구간', support: '', group: '경제적취약(학자금1~3구간)' },
+    { type: '학자금 지원구간 3구간', support: '', group: '경제적취약(학자금1~3구간)' },
+    { type: '다문화가정', support: '', group: '사회적취약' },
   ],
 
   eligibility: [

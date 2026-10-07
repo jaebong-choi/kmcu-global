@@ -19,7 +19,7 @@
   <form class="form" id="f" hidden>
     <fieldset>
       <legend>개인정보 수집·이용 동의</legend>
-      <div class="terms">수집 항목: 성명, 학번, 학과, 학년, 이수학점, 평점, 연락처, 비상연락처, 이메일, 주소, 어학성적, 현장학습 계획서
+      <div class="terms">수집 항목: 성명, 성별, 학번, 학과, 계열, 학년, 지도교수, 이수학점, 평점, 연락처, 비상연락처, 이메일, 주소, 어학성적, 현장학습 계획서
 목적: 글로벌 현장학습 참가자 선발 및 사업 운영 (한국전문대학교육협의회 제출 포함)
 보유 기간: 사업 결과보고 완료 시까지
 동의하지 않으면 지원할 수 없습니다.</div>
@@ -32,8 +32,10 @@
         <label>성명(한글)<input name="성명(한글)" required maxlength="20"></label>
         <label>성명(영문)<small>여권과 같은 철자</small><input name="성명(영문)" required maxlength="50" placeholder="HONG GIL DONG"></label>
         <label>성명(한자) <small>선택</small><input name="성명(한자)" maxlength="20"></label>
+        <label>성별<select name="성별" required><option value="">선택</option><option>남</option><option>여</option></select></label>
         <label>학번<input name="학번" required inputmode="numeric" pattern="\d{7,10}" title="숫자만 입력해 주세요"></label>
         <label>학과<input name="학과" required maxlength="40"></label>
+        <label>학과(영문)<input name="학과(영문)" required maxlength="60" placeholder="Hair Design"></label>
         <label>계열<select name="계열" required><option value="">선택</option><option>인문사회계열</option><option>자연과학계열</option><option>공학계열</option><option>예체능계열</option><option>기타</option></select></label>
         <label>학년<select name="학년" required><option value="">선택</option><option>1학년</option><option>2학년</option><option>3학년</option><option>4학년</option></select></label>
         <label>지도교수<input name="지도교수" required maxlength="20"></label>
@@ -51,6 +53,7 @@
       <label>신청 구분<select name="신청 구분" required><option value="">선택</option><option>일반 지정형</option><option>일반 자율형</option><option>유아교육 트랙</option></select></label>
       <label>희망 파견국가 (1지망)<select name="1지망" id="p1" required></select></label>
       <div class="info" id="p1info"></div>
+      <label id="fieldBox" hidden>신청 분야 <small>1지망 기준</small><select name="신청 분야" id="field"></select></label>
       <label>희망 파견국가 (2지망) <small>선택</small><select name="2지망" id="p2"></select></label>
       <div class="info" id="p2info"></div>
       <div class="row">
@@ -62,7 +65,7 @@
     <fieldset>
       <legend>어학성적</legend>
       <div class="row">
-        <label>시험명<select name="어학 시험" required><option value="">선택</option><option>TOEIC</option><option>OPIc</option><option>토익스피킹</option><option>기타</option><option>성적 없음</option></select></label>
+        <label>시험명<select name="어학 시험" required><option value="">선택</option><option>TOEIC</option><option>OPIc</option><option>토익스피킹</option><option>TOEFL(IBT)</option><option>IELTS</option><option>TEPS</option><option>기타</option><option>성적 없음</option></select></label>
         <label>점수 또는 등급<input name="어학 점수" maxlength="20" placeholder="750, IM2, 6급"></label>
         <label>응시일<input name="어학 응시일" type="date"></label>
       </div>
@@ -151,6 +154,17 @@
   };
   showProg($('p1'), $('p1info'));
   showProg($('p2'), $('p2info'));
+
+  // 신청 분야는 1지망 프로그램의 fields 에서 고른다
+  const showInfo = $('p1').onchange;
+  $('p1').onchange = () => {
+    showInfo();
+    const p = DATA.programs.find(p => label(p) === $('p1').value);
+    const f = (p && p.fields) || [];
+    $('field').innerHTML = f.length === 1 ? `<option>${f[0]}</option>` : opts('선택', f);
+    $('fieldBox').hidden = !f.length;
+    $('field').required = f.length > 0;
+  };
 
   $('vtype').innerHTML = opts('선택', DATA.vulnerable.map(v => v.type));
   $('vtype').onchange = () => {
