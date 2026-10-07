@@ -139,8 +139,16 @@ function onOpen() {
 function setupTemplate() {
   const ui = SpreadsheetApp.getUi();
   const ss = SpreadsheetApp.getActiveSpreadsheet();
+  // 다른 시트에서 복사해 오면 "신청자명단의 사본"처럼 이름이 바뀌므로 원래 이름으로 돌린다
+  TPL.forEach(n => {
+    const s = ss.getSheetByName(n) || ss.getSheets().find(s => s.getName().includes(n));
+    if (s) s.setName(n);
+  });
   const sh = ss.getSheetByName(TPL[0]);
   if (!sh || !ss.getSheetByName(TPL[1])) return ui.alert('신청자명단·담당자 탭이 없습니다. 파일 > 가져오기 > 업로드에서 지난해 신청명단 xlsx를 "새 시트 삽입"으로 가져와 주세요.');
+  // 지난해 파일에 걸려 있던 필터와 숨긴 행을 푼다
+  if (sh.getFilter()) sh.getFilter().remove();
+  sh.showRows(1, sh.getMaxRows());
   const last = sh.getMaxRows();
   ['B', 'E:V', 'X:AG', 'AI', 'AK'].forEach(c => {
     const [a, b] = c.split(':');
