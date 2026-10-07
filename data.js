@@ -11,7 +11,7 @@ const DATA = {
 
   // Apps Script 웹앱 주소 (apps-script.gs 배포 후 받은 /exec 주소).
   // 비워 두면 지원서 제출과 조회가 "접수 준비 중"으로 막힌다.
-  apiUrl: '',
+  apiUrl: 'https://script.google.com/macros/s/AKfycbzq9P--S1shpRIpFIpUv2mjwcDK3MG8guaELb6RkAHv_XWaCtWfENPdOFOItwp_7rk/exec',
 
   // open 이 비어 있으면 그 단계는 날짜 미정으로 표시된다.
   rounds: [
